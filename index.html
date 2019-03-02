@@ -1,53 +1,81 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Lockpick to Cookie Bot</title>
+    <meta charset="utf-8">
+    <title>GameTracker title.keys Importer</title>
+    <style type="text/css">
+        body {
+            background-color: #EDEDED;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+    </style>
 </head>
 <body>
-Lockpick titles.keys: <input type="file" id="lockpick" name="lockpick" /><br>
-<div id="resultDiv" style="display:none;">
-    <textarea id="result" style="width: 100%;"></textarea>
-</div>
-<script type="text/javascript">
-function handleFileSelect(event) {
-    let files = event.target.files; // FileList object
-    let reader = new FileReader();
+    <main>
+        <p>This will convert your title.keys generated from <a href="https://github.com/shchmue/Lockpick/releases" target="_blank">Lockpick</a> to commands to send to the GameTracker bot. Upload your title.keys then send the command(s) to the bot on Discord.</p>
+        <div id="uploadDiv">
+            Lockpick title.keys: <input type="file" id="lockpick" name="lockpick" /><br>
+        </div>
+        <div id="resultsDiv" style="display:none;">
+            <textarea id="result" style="width: 50%; height: 150px; margin-bottom: 20px;"></textarea>
+        </div>
+    </main>
 
-  // Closure to capture the file information and read it.
-    reader.onload = (function(theFile) {
-        return function(e) {
-            if (! theFile.name.toLowerCase().match(/titles?.keys/i)) {
-                alert('You must upload a title.keys from Lockpick!');
-                return;
-            }
+    <script type="text/javascript">
+    function handleFileSelect(event) {
+        let files = event.target.files; // FileList object
+        let reader = new FileReader();
 
-            let contents = e.target.result.split(/\n/);
-            let result = [];
-            let resultsDiv = document.getElementById('resultDiv');
-            let resultsText = document.getElementById('result');
-
-            for (let i = 0; i < contents.length; i++) {
-                let titleid = contents[i].substr(0, 16);
-                if (titleid.substr(13) != 800 && titleid.length > 0 && ! result.includes(titleid)) {
-                    result.push(titleid);
+      // Closure to capture the file information and read it.
+        reader.onload = (function(theFile) {
+            return function(e) {
+                if (! theFile.name.toLowerCase().match(/titles?\.keys/i)) {
+                    alert('You must upload a title.keys from Lockpick!');
+                    return;
                 }
-            }
 
-            while (result.length > 110) {
-                let newText = resultsText.cloneNode();
-                newText.id = '';
-                resultsDiv.insertBefore(newText, resultsText);
-                newText.value = "g!sub " + result.splice(0,110).join(', ');
-            }
+                let contents = e.target.result.split(/\n/);
+                let result = [];
+                let resultsDiv = document.getElementById('resultsDiv');
+                let uploadDiv = document.getElementById('uploadDiv');
+                let resultsText = document.getElementById('result');
 
-            resultsDiv.style.display = '';
-            resultsText.value = "g!sub " + result.join(', ');
-        };
-    })(files[0]);
-    reader.readAsText(files[0]);
-}
+                for (let i = 0; i < contents.length; i++) {
+                    let titleid = contents[i].substr(0, 13) + "000"; // Modify update/DLC ids back to base
+                    if (titleid.length > 3 && ! result.includes(titleid)) {
+                        result.push(titleid);
+                    }
+                }
 
-document.getElementById('lockpick').addEventListener('change', handleFileSelect, false);
-</script>
+                let total = result.length;
+
+                if (! total > 0) {
+                    alert('No titleids were extracted, make sure you uploaded the right file');
+                }
+
+                uploadDiv.style.display = 'none';
+
+                while (result.length > 110) {
+                    let newText = resultsText.cloneNode();
+                    newText.removeAttribute('id');
+                    resultsDiv.insertBefore(newText, resultsText);
+                    newText.value = "g!sub " + result.splice(0,110).join(', ');
+                }
+
+                resultsText.value = "g!sub " + result.join(', ');
+
+                let totalP = document.createElement('p');
+                totalP.innerHTML = `Converted ${total} titles`;
+                resultsDiv.appendChild(totalP);
+
+                resultsDiv.style.display = '';
+            };
+        })(files[0]);
+
+        reader.readAsText(files[0]);
+    }
+
+    document.getElementById('lockpick').addEventListener('change', handleFileSelect, false);
+    </script>
 </body>
 </html>
