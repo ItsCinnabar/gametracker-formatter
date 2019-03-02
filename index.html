@@ -20,13 +20,28 @@ function handleFileSelect(event) {
                 alert('You must upload a title.keys from Lockpick!');
                 return;
             }
+
             let contents = e.target.result.split(/\n/);
             let result = [];
-            for (var i=0; i < contents.length; i++) {
-                result.push(contents[i].substr(0, 16));
+            let resultsDiv = document.getElementById('resultDiv');
+            let resultsText = document.getElementById('result');
+
+            for (let i = 0; i < contents.length; i++) {
+                let titleid = contents[i].substr(0, 16);
+                if (titleid.substr(13) != 800 && titleid.length > 0 && ! result.includes(titleid)) {
+                    result.push(titleid);
+                }
             }
-            document.getElementById('resultDiv').style.display = '';
-            document.getElementById('result').value = "g!sub " + result.join(', ');
+
+            while (result.length > 110) {
+                let newText = resultsText.cloneNode();
+                newText.id = '';
+                resultsDiv.insertBefore(newText, resultsText);
+                newText.value = "g!sub " + result.splice(0,110).join(', ');
+            }
+
+            resultsDiv.style.display = '';
+            resultsText.value = "g!sub " + result.join(', ');
         };
     })(files[0]);
     reader.readAsText(files[0]);
