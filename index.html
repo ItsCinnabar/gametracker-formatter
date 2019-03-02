@@ -41,8 +41,8 @@
                 let resultsText = document.getElementById('result');
 
                 for (let i = 0; i < contents.length; i++) {
-                    let titleid = contents[i].substr(0, 13) + "000"; // Modify update/DLC ids back to base
-                    if (titleid.length > 3 && ! result.includes(titleid)) {
+                    let titleid = contents[i].substr(0, 12) + "0000"; // Modify update/DLC ids back to base
+                    if (titleid.length > 4 && titleid != "0100ffffffff0000" && ! result.includes(titleid)) {
                         result.push(titleid);
                     }
                 }
