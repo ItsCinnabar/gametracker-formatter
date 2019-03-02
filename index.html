@@ -12,9 +12,9 @@
 </head>
 <body>
     <main>
-        <p>This will convert your title.keys generated from <a href="https://github.com/shchmue/Lockpick/releases" target="_blank">Lockpick</a> to commands to send to the GameTracker bot. Upload your title.keys then send the command(s) to the bot on Discord.</p>
+        <p>This will convert your title.keys generated from <a href="https://github.com/shchmue/Lockpick/releases" target="_blank">Lockpick</a> or SX Installer to commands to send to the GameTracker bot. Upload your title.keys or titlekeys.txt then send the command(s) to the bot on Discord.</p>
         <div id="uploadDiv">
-            Lockpick title.keys: <input type="file" id="lockpick" name="lockpick" /><br>
+            Lockpick title.keys / SX Installer titlekeys.txt: <input type="file" id="fileUpload" /><br>
         </div>
         <div id="resultsDiv" style="display:none;">
             <textarea id="result" style="width: 50%; height: 150px; margin-bottom: 20px;"></textarea>
@@ -29,8 +29,8 @@
       // Closure to capture the file information and read it.
         reader.onload = (function(theFile) {
             return function(e) {
-                if (! theFile.name.toLowerCase().match(/titles?\.keys/i)) {
-                    alert('You must upload a title.keys from Lockpick!');
+                if (! theFile.name.toLowerCase().match(/(titles?\.keys)|(titlekeys\.txt)/i)) {
+                    alert('You must upload a title.keys from Lockpick or a titlekeys.txt from SX Installer!');
                     return;
                 }
 
@@ -42,7 +42,7 @@
 
                 for (let i = 0; i < contents.length; i++) {
                     let titleid = contents[i].substr(0, 12) + "0000"; // Modify update/DLC ids back to base
-                    if (titleid.length > 4 && titleid != "0100ffffffff0000" && ! result.includes(titleid)) {
+                    if (titleid.length == 16 && titleid != "0100ffffffff0000" && ! result.includes(titleid)) {
                         result.push(titleid);
                     }
                 }
@@ -75,7 +75,7 @@
         reader.readAsText(files[0]);
     }
 
-    document.getElementById('lockpick').addEventListener('change', handleFileSelect, false);
+    document.getElementById('fileUpload').addEventListener('change', handleFileSelect, false);
     </script>
 </body>
 </html>
